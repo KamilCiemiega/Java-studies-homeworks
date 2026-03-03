@@ -7,79 +7,104 @@ import org.kamil.librarymanager.service.BookService;
 
 import java.util.Scanner;
 
-public class ConsoleUI {
-    private final AuthService authService;
+public class ConsoleView {
     private final BookService bookService;
-    private final Scanner scanner = new Scanner(System.in);
+    private final AuthService authService;
+    private final Scanner scanner;
+    private User currentUser;
 
-    public ConsoleUI(AuthService authService, BookService bookService) {
-        this.authService = authService;
+    public ConsoleView(BookService bookService, AuthService authService) {
         this.bookService = bookService;
+        this.authService = authService;
+        this.scanner = new Scanner(System.in);
     }
 
     public void start() {
-        System.out.print("Login: ");
-        String login = scanner.nextLine();
-
-        System.out.print("Password: ");
-        String password = scanner.nextLine();
-
-        User user = authService.login(login, password);
-
-        if (user == null) {
-            System.out.println("Incorrect login details");
-            return;
+        System.out.println("=== Welcome to Library Manager ===");
+        while (true) {
+            if (currentUser == null) {
+                showLoginMenu();
+            } else {
+                showMainMenu();
+            }
         }
+    }
 
-        System.out.println("Logged in as: " + user.getRole());
+    private void showLoginMenu() {
+        System.out.println("\n1. Login\n2. Exit");
+        String choice = scanner.nextLine();
 
-        if (user.getRole() == Role.ADMIN) {
-            adminMenu();
+        if (choice.equals("1")) {
+            System.out.print("Username: ");
+            String username = scanner.nextLine();
+            System.out.print("Password: ");
+            String password = scanner.nextLine();
+
+            currentUser = authService.login(username, password);
+            if (currentUser != null) {
+                System.out.println("Login successful! Welcome " + currentUser.getUsername());
+            } else {
+                System.out.println("Invalid credentials.");
+            }
         } else {
-            userMenu();
+            System.exit(0);
         }
     }
 
-    private void userMenu() {
-        System.out.println("1. List of books");
-        System.out.println("2. Search by title");
-        System.out.println("3. Search by author");
+    private void showMainMenu() {
+        System.out.println("\n--- Main Menu ---");
+        System.out.println("1. View All Books");
+        System.out.println("2. Search for a Book");
 
-        int choice = Integer.parseInt(scanner.nextLine());
+        // Role-based Access Control (Requirement!)
+        if (currentUser.getRole() == Role.ADMIN) {
+            System.out.println("3. Add New Book (Admin Only)");
+            System.out.println("4. Delete Book (Admin Only)");
+        }
+
+        System.out.println("L. Logout");
+        System.out.print("Choice: ");
+        String choice = scanner.nextLine().toUpperCase();
 
         switch (choice) {
-            case 1 -> bookService.getAll().forEach(System.out::println);
-            case 2 -> {
-                System.out.print("Title: ");
-                bookService.searchByTitle(scanner.nextLine()).forEach(System.out::println);
-            }
-            case 3 -> {
-                System.out.print("Author: ");
-                bookService.searchByAuthor(scanner.nextLine()).forEach(System.out::println);
-            }
+            case "1" -> listBooks();
+            case "2" -> searchBooks();
+            case "3" -> { if (currentUser.getRole() == Role.ADMIN) addBook(); }
+            case "4" -> { if (currentUser.getRole() == Role.ADMIN) deleteBook(); }
+            case "L" -> currentUser = null;
+            default -> System.out.println("Invalid option.");
         }
     }
 
-    private void adminMenu() {
-        System.out.println("1. List of books");
-        System.out.println("2. Add Book");
-        System.out.println("3. Delete Book");
+    private void listBooks() {
+        System.out.println("\nList of Books:");
+        bookService.getAll().forEach(book ->
+                System.out.println("[" + book.getId() + "] " + book.getTitle() + " - " + book.getAuthor() + " (" + book.getStatus() + ")")
+        );
+    }
 
-        int choice = Integer.parseInt(scanner.nextLine());
+    private void addBook() {
+        System.out.print("Title: ");
+        String title = scanner.nextLine();
+        System.out.print("Author: ");
+        String author = scanner.nextLine();
+        bookService.addBook(title, author);
+        System.out.println("Book added to Database!");
+    }
 
-        switch (choice) {
-            case 1 -> bookService.getAll().forEach(System.out::println);
-            case 2 -> {
-                System.out.print("Title: ");
-                String title = scanner.nextLine();
-                System.out.print("Author: ");
-                String author = scanner.nextLine();
-                bookService.addBook(title, author);
-            }
-            case 3 -> {
-                System.out.print("ID: ");
-                bookService.deleteBook(Long.parseLong(scanner.nextLine()));
-            }
+    private void deleteBook() {
+        System.out.print("Enter ID to delete: ");
+        try {
+            Long id = Long.parseLong(scanner.nextLine());
+            bookService.deleteBook(id);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid ID format.");
         }
+    }
+
+    private void searchBooks() {
+        System.out.print("Enter title snippet: ");
+        String query = scanner.nextLine();
+        bookService.searchByTitle(query).forEach(System.out::println);
     }
 }

@@ -5,8 +5,8 @@ import org.kamil.librarymanager.model.Book;
 import java.util.List;
 
 public interface BookRepository {
-    List<Book> finAll();
+    List<Book> findAll();
     void save(Book book);
-    void deleteBId(Long id);
-    Book finById(Long id);
+    void deleteById(Long id);
+    Book findById(Long id);
 }

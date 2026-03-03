@@ -1,36 +1,29 @@
 package org.kamil.librarymanager;
 
-import org.kamil.librarymanager.model.Role;
-import org.kamil.librarymanager.model.User;
 import org.kamil.librarymanager.repository.BookRepository;
-import org.kamil.librarymanager.repository.InMemoryBookRepository;
-import org.kamil.librarymanager.repository.InMemoryUserRepository;
+import org.kamil.librarymanager.repository.JdbcBookRepositoryImpl;
+import org.kamil.librarymanager.repository.JdbcUserRepositoryImpl;
 import org.kamil.librarymanager.repository.UserRepository;
 import org.kamil.librarymanager.service.AuthService;
 import org.kamil.librarymanager.service.BookService;
 import org.kamil.librarymanager.service.PasswordHasher;
 import org.kamil.librarymanager.service.Sha256PasswordHasher;
-import org.kamil.librarymanager.ui.ConsoleUI;
+import org.kamil.librarymanager.ui.ConsoleView;
 
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
+        BookRepository bookRepository = new JdbcBookRepositoryImpl();
+        UserRepository userRepository = new JdbcUserRepositoryImpl();
 
-        PasswordHasher hasher = new Sha256PasswordHasher();
 
-        User admin = new User("admin", hasher.hash("admin123"), Role.ADMIN);
-        User user = new User("user", hasher.hash("user123"), Role.USER);
+        PasswordHasher passwordHasher = new Sha256PasswordHasher();
 
-        UserRepository userRepository =
-                new InMemoryUserRepository(List.of(admin, user));
-
-        BookRepository bookRepository = new InMemoryBookRepository();
-
-        AuthService authService = new AuthService(userRepository, hasher);
         BookService bookService = new BookService(bookRepository);
+        AuthService authService = new AuthService(userRepository, passwordHasher);
 
-        ConsoleUI ui = new ConsoleUI(authService, bookService);
-        ui.start();
+        ConsoleView view = new ConsoleView(bookService, authService);
+        view.start();
+
     }
 }

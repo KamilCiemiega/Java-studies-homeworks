@@ -1,5 +1,6 @@
 package org.kamil.librarymanager.service;
 
+
 import org.kamil.librarymanager.model.User;
 import org.kamil.librarymanager.repository.UserRepository;
 
@@ -16,7 +17,10 @@ public class AuthService {
         User user = userRepository.findByUsername(username);
         if (user == null) return null;
 
-        String hashed = passwordHasher.hash(password);
-        return hashed.equals(user.getPasswordHash()) ? user : null;
+        String hashedInput = passwordHasher.hash(password);
+        if (hashedInput.equals(user.getPasswordHash())) {
+            return user;
+        }
+        return null;
     }
 }

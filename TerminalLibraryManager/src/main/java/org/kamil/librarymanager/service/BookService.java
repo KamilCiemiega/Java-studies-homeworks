@@ -1,13 +1,13 @@
 package org.kamil.librarymanager.service;
 
 import org.kamil.librarymanager.model.Book;
+import org.kamil.librarymanager.model.BookStatus;
 import org.kamil.librarymanager.repository.BookRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class BookService {
-
     private final BookRepository bookRepository;
 
     public BookService(BookRepository bookRepository) {
@@ -15,26 +15,25 @@ public class BookService {
     }
 
     public List<Book> getAll() {
-        return bookRepository.finAll();
+        return bookRepository.findAll();
+    }
+
+    public void addBook(String title, String author) {
+        Book newBook = new Book(null, title, author, BookStatus.AVAILABLE);
+        bookRepository.save(newBook);
+    }
+
+    public void deleteBook(Long id) {
+        bookRepository.deleteById(id);
     }
 
     public List<Book> searchByTitle(String title) {
-        return bookRepository.finAll().stream()
+        return bookRepository.findAll().stream()
                 .filter(b -> b.getTitle().toLowerCase().contains(title.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
-    public List<Book> searchByAuthor(String author) {
-        return bookRepository.finAll().stream()
-                .filter(b -> b.getAuthor().toLowerCase().contains(author.toLowerCase()))
-                .collect(Collectors.toList());
-    }
-
-    public void addBook(String title, String author) {
-        bookRepository.save(new Book(null, title, author));
-    }
-
-    public void deleteBook(Long id) {
-        bookRepository.deleteBId(id);
+    public Book getBookById(Long id) {
+        return bookRepository.findById(id);
     }
 }
