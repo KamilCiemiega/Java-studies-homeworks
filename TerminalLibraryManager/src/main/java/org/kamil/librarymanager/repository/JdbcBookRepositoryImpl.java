@@ -15,7 +15,8 @@ public class JdbcBookRepositoryImpl implements BookRepository {
     @Override
     public List<Book> findAll() {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT * FROM books";
+        String sql = "SELECT b.*, c.name as category_name FROM books b " +
+                "LEFT JOIN categories c ON b.category_id = c.id";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -76,13 +77,41 @@ public class JdbcBookRepositoryImpl implements BookRepository {
         }
         return null;
     }
-
     private Book mapResultSetToBook(ResultSet rs) throws SQLException {
-        return new Book(
-                rs.getLong("id"),
-                rs.getString("title"),
-                rs.getString("author"),
-                BookStatus.valueOf(rs.getString("status"))
-        );
+        Book book = new Book();
+        book.setId(rs.getLong("id"));
+        book.setTitle(rs.getString("title"));
+        book.setAuthor(rs.getString("author"));
+        book.setStatus(BookStatus.valueOf(rs.getString("status")));
+        book.setCategoryName(rs.getString("category_name"));
+        return book;
     }
+
+    public void rentBook(Long bookId, Long userId) {
+        String insertRental = "INSERT INTO rentals (book_id, user_id, rental_date) VALUES (?, ?, CURRENT_TIMESTAMP)";
+        String updateBook = "UPDATE books SET status = 'RENTED' WHERE id = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            conn.setAutoCommit(false); // Start transaction
+            try (PreparedStatement ps1 = conn.prepareStatement(insertRental);
+                 PreparedStatement ps2 = conn.prepareStatement(updateBook)) {
+
+                ps1.setLong(1, bookId);
+                ps1.setLong(2, userId);
+                ps1.executeUpdate();
+
+                ps2.setLong(1, bookId);
+                ps2.executeUpdate();
+
+                conn.commit();
+                System.out.println("Book rented successfully.");
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            }
+        } catch (SQLException e) {
+            System.err.println("Rental Error: " + e.getMessage());
+        }
+    }
+
 }

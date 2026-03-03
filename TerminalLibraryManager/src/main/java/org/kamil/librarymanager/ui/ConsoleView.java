@@ -2,6 +2,7 @@ package org.kamil.librarymanager.ui;
 
 import org.kamil.librarymanager.model.Role;
 import org.kamil.librarymanager.model.User;
+import org.kamil.librarymanager.repository.RentalRepository;
 import org.kamil.librarymanager.service.AuthService;
 import org.kamil.librarymanager.service.BookService;
 
@@ -10,12 +11,14 @@ import java.util.Scanner;
 public class ConsoleView {
     private final BookService bookService;
     private final AuthService authService;
+    private final RentalRepository rentalRepository;
     private final Scanner scanner;
     private User currentUser;
 
-    public ConsoleView(BookService bookService, AuthService authService) {
+    public ConsoleView(BookService bookService, AuthService authService, RentalRepository rentalRepository) {
         this.bookService = bookService;
         this.authService = authService;
+        this.rentalRepository = rentalRepository;
         this.scanner = new Scanner(System.in);
     }
 
@@ -52,14 +55,16 @@ public class ConsoleView {
     }
 
     private void showMainMenu() {
-        System.out.println("\n--- Main Menu ---");
-        System.out.println("1. View All Books");
-        System.out.println("2. Search for a Book");
+        System.out.println("\n--- MAIN MENU ---");
+        System.out.println("1. List All Books");
+        System.out.println("2. Search by Title");
+        System.out.println("3. Rent a Book (Feature #1)");
+        System.out.println("4. Filter by Category (Feature #2)");
 
-        // Role-based Access Control (Requirement!)
         if (currentUser.getRole() == Role.ADMIN) {
-            System.out.println("3. Add New Book (Admin Only)");
-            System.out.println("4. Delete Book (Admin Only)");
+            System.out.println("5. Add New Book");
+            System.out.println("6. Delete Book");
+            System.out.println("7. View Library Statistics (Feature #3)");
         }
 
         System.out.println("L. Logout");
@@ -69,10 +74,16 @@ public class ConsoleView {
         switch (choice) {
             case "1" -> listBooks();
             case "2" -> searchBooks();
-            case "3" -> { if (currentUser.getRole() == Role.ADMIN) addBook(); }
-            case "4" -> { if (currentUser.getRole() == Role.ADMIN) deleteBook(); }
-            case "L" -> currentUser = null;
-            default -> System.out.println("Invalid option.");
+            case "3" -> rentBook();
+            case "4" -> filterByCategory();
+            case "5" -> { if (currentUser.getRole() == Role.ADMIN) addBook(); }
+            case "6" -> { if (currentUser.getRole() == Role.ADMIN) deleteBook(); }
+            case "7" -> { if (currentUser.getRole() == Role.ADMIN) displayStatistics(); }
+            case "L" -> {
+                currentUser = null;
+                System.out.println("Logged out successfully.");
+            }
+            default -> System.out.println("Invalid option. Try again.");
         }
     }
 
@@ -84,12 +95,33 @@ public class ConsoleView {
     }
 
     private void addBook() {
-        System.out.print("Title: ");
-        String title = scanner.nextLine();
-        System.out.print("Author: ");
-        String author = scanner.nextLine();
-        bookService.addBook(title, author);
-        System.out.println("Book added to Database!");
+        try {
+            System.out.println("\n--- Add New Book ---");
+
+            System.out.print("Title: ");
+            String title = scanner.nextLine();
+
+            System.out.print("Author: ");
+            String author = scanner.nextLine();
+
+            System.out.print("Publication Year: ");
+            int year = Integer.parseInt(scanner.nextLine());
+
+            System.out.print("ISBN: ");
+            String isbn = scanner.nextLine();
+
+            System.out.print("Category ID: ");
+            Long categoryId = Long.parseLong(scanner.nextLine());
+
+            bookService.addBook(title, author, year, isbn, categoryId);
+
+            System.out.println("Success: Book added to Database!");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Invalid input. Year and Category ID must be numbers.");
+        } catch (Exception e) {
+            System.out.println("Error: An unexpected error occurred: " + e.getMessage());
+        }
     }
 
     private void deleteBook() {
@@ -106,5 +138,11 @@ public class ConsoleView {
         System.out.print("Enter title snippet: ");
         String query = scanner.nextLine();
         bookService.searchByTitle(query).forEach(System.out::println);
+    }
+
+    private void displayStatistics() {
+        System.out.println("\nFetching latest data from database...");
+        // Assuming you put the logic in bookService
+        bookService.showAdminStats();
     }
 }

@@ -1,9 +1,6 @@
 package org.kamil.librarymanager;
 
-import org.kamil.librarymanager.repository.BookRepository;
-import org.kamil.librarymanager.repository.JdbcBookRepositoryImpl;
-import org.kamil.librarymanager.repository.JdbcUserRepositoryImpl;
-import org.kamil.librarymanager.repository.UserRepository;
+import org.kamil.librarymanager.repository.*;
 import org.kamil.librarymanager.service.AuthService;
 import org.kamil.librarymanager.service.BookService;
 import org.kamil.librarymanager.service.PasswordHasher;
@@ -21,8 +18,9 @@ public class Main {
 
         BookService bookService = new BookService(bookRepository);
         AuthService authService = new AuthService(userRepository, passwordHasher);
+        RentalRepository rentalRepo = new JdbcRentalRepositoryImpl();
 
-        ConsoleView view = new ConsoleView(bookService, authService);
+        ConsoleView view = new ConsoleView(bookService, authService, rentalRepo);
         view.start();
 
     }
