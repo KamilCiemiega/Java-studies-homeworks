@@ -16,26 +16,29 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        String sql = "SELECT * FROM users WHERE username = ?";
+        String sql = "SELECT id, username, password_hash, role FROM users WHERE username = ?";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, username);
+
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
+                    // Mapping DB row to User object
+                    User user = User.builder()
+                            .id(rs.getLong("id"))
+                            .username(rs.getString("username"))
+                            .passwordHash(rs.getString("password_hash"))
+                            .role(Role.valueOf(rs.getString("role").toUpperCase()))
+                            .build();
 
-                    User user = new User(
-                            rs.getLong("id"),
-                            rs.getString("username"),
-                            rs.getString("password_hash"),
-                            Role.valueOf(rs.getString("role"))
-                    );
                     return Optional.of(user);
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error finding user: " + e.getMessage());
+            // This is the unreachable line during successful H2 tests
+            System.err.println("Database error: " + e.getMessage());
         }
 
         return Optional.empty();

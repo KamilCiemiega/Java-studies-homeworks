@@ -9,4 +9,6 @@ public interface BookRepository {
     void save(Book book);
     void deleteById(Long id);
     Book findById(Long id);
+    void printStatistics();
+    void printFullStatistics();
 }

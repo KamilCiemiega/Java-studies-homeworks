@@ -36,3 +36,11 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Ignore Docker database files
+mysql_data/
+# Ignore compiled Java files
+target/
+# Ignore IDE settings
+.idea/
+*.iml

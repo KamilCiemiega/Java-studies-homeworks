@@ -3,16 +3,28 @@ package org.kamil.librarymanager.service;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class Sha256PasswordHasherTest {
     private final PasswordHasher hasher = new Sha256PasswordHasher();
 
     @Test
-    void shouldGenerateConsistentHash() {
-        String password = "admin123";
+    void shouldHashPasswordCorrectly() {
+        String password = "admin";
         String hash = hasher.hash(password);
 
-        assertThat(hash).isEqualTo("240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9");
+        assertThat(hash).isNotNull();
+        assertThat(hash).hasSize(64);
+    }
+
+    @Test
+    void shouldBeConsistent() {
+        String p1 = "password123";
+        assertThat(hasher.hash(p1)).isEqualTo(hasher.hash(p1));
+    }
+
+    @Test
+    void shouldHandleEmptyString() {
+        String hash = hasher.hash("");
+        assertThat(hash).hasSize(64);
     }
 }

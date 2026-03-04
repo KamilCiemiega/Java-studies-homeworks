@@ -39,21 +39,21 @@ CREATE TABLE IF NOT EXISTS rentals (
 -- INITIAL DATA (Runs only on first DB creation)
 -- ==========================================================
 
--- Add default categories
-INSERT IGNORE INTO categories (name) VALUES ('Fantasy'), ('Science Fiction'), ('History'), ('Biography');
+-- For Categories
+INSERT INTO categories (name)
+SELECT 'Fantasy' WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = 'Fantasy');
+INSERT INTO categories (name)
+SELECT 'Science Fiction' WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = 'Science Fiction');
+INSERT INTO categories (name)
+SELECT 'History' WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = 'History');
+INSERT INTO categories (name)
+SELECT 'Biography' WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = 'Biography');
 
--- Add an Admin user (Username: admin | Password: admin123)
--- The hash below is generated using SHA-256
-INSERT IGNORE INTO users (username, password_hash, role)
-VALUES ('admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'ADMIN');
+-- For Users
+INSERT INTO users (username, password_hash, role)
+SELECT 'admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'ADMIN'
+    WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'admin');
 
--- Add a test user (Username: kamil | Password: user123)
-INSERT IGNORE INTO users (username, password_hash, role)
-VALUES ('kamil', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'USER');
-
--- Add some starter books
-INSERT IGNORE INTO books (title, author, year_published, status, category_id)
-VALUES ('The Witcher', 'Andrzej Sapkowski', 1993, 'AVAILABLE', 1);
-
-INSERT IGNORE INTO books (title, author, year_published, status, category_id)
-VALUES ('Dune', 'Frank Herbert', 1965, 'AVAILABLE', 2);
+INSERT INTO users (username, password_hash, role)
+SELECT 'kamil', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'USER'
+    WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'kamil');

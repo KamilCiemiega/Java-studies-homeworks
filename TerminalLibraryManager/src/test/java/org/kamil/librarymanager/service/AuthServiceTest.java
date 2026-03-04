@@ -2,7 +2,6 @@ package org.kamil.librarymanager.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kamil.librarymanager.model.Role;
 import org.kamil.librarymanager.model.User;
 import org.kamil.librarymanager.repository.UserRepository;
 import java.util.Optional;
@@ -18,50 +17,57 @@ public class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Create the mocks
         userRepository = mock(UserRepository.class);
-        passwordHasher = new Sha256PasswordHasher();
+        passwordHasher = mock(PasswordHasher.class);
         authService = new AuthService(userRepository, passwordHasher);
     }
 
     @Test
-    void shouldLoginSuccessfullyWithCorrectCredentials() {
+    void login_ShouldReturnUser_WhenCredentialsAreValid() {
         // Arrange
-        String username = "admin";
-        String pass = "admin123";
-        User mockUser = new User(1L, username, passwordHasher.hash(pass), Role.ADMIN);
+        String username = "kamil";
+        String password = "password123";
+        String hashedPassword = "hashed_password123";
 
-        // Standard Syntax
+        User mockUser = new User();
+        mockUser.setUsername(username);
+        mockUser.setPasswordHash(hashedPassword);
+
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        when(passwordHasher.hash(password)).thenReturn(hashedPassword);
 
         // Act
-        Optional<User> result = authService.login(username, pass);
+        Optional<User> result = authService.login(username, password);
 
         // Assert
         assertThat(result).isPresent();
-        assertThat(result.get().getUsername()).isEqualTo("admin");
+        assertThat(result.get().getUsername()).isEqualTo(username);
     }
 
     @Test
-    void shouldFailLoginWhenPasswordIsWrong() {
+    void login_ShouldReturnEmpty_WhenUserNotFound() {
         // Arrange
-        User mockUser = new User(1L, "admin", passwordHasher.hash("correct"), Role.ADMIN);
-        when(userRepository.findByUsername("admin")).thenReturn(Optional.of(mockUser));
+        when(userRepository.findByUsername("unknown")).thenReturn(Optional.empty());
 
         // Act
-        Optional<User> result = authService.login("admin", "wrong_password");
+        Optional<User> result = authService.login("unknown", "any_password");
 
         // Assert
         assertThat(result).isEmpty();
     }
 
     @Test
-    void shouldFailLoginWhenUserDoesNotExist() {
+    void login_ShouldReturnEmpty_WhenPasswordIsIncorrect() {
         // Arrange
-        when(userRepository.findByUsername("unknown")).thenReturn(Optional.empty());
+        String username = "kamil";
+        User mockUser = new User();
+        mockUser.setPasswordHash("correct_hash");
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        when(passwordHasher.hash("wrong_password")).thenReturn("wrong_hash");
 
         // Act
-        Optional<User> result = authService.login("unknown", "any_pass");
+        Optional<User> result = authService.login(username, "wrong_password");
 
         // Assert
         assertThat(result).isEmpty();
