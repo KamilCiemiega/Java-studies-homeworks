@@ -2,6 +2,7 @@ package org.kamil.librarymanager.repository;
 import org.kamil.librarymanager.config.DatabaseConfig;
 import org.kamil.librarymanager.model.Book;
 import org.kamil.librarymanager.model.BookStatus;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class JdbcBookRepositoryImpl implements BookRepository {
 
     @Override
@@ -33,13 +35,17 @@ public class JdbcBookRepositoryImpl implements BookRepository {
 
     @Override
     public void save(Book book) {
-        String sql = "INSERT INTO books (title, author, status) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO books (title, author, year_published, isbn, status, category_id) VALUES (?, ?, ?, ?, ?, ?)";
+
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, book.getTitle());
             stmt.setString(2, book.getAuthor());
-            stmt.setString(3, book.getStatus() != null ? book.getStatus().name() : BookStatus.AVAILABLE.name());
+            stmt.setObject(3, book.getYearPublished());
+            stmt.setString(4, book.getIsbn());
+            stmt.setString(5, book.getStatus() != null ? book.getStatus().name() : "AVAILABLE");
+            stmt.setObject(6, book.getCategoryId());
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -86,32 +92,4 @@ public class JdbcBookRepositoryImpl implements BookRepository {
         book.setCategoryName(rs.getString("category_name"));
         return book;
     }
-
-    public void rentBook(Long bookId, Long userId) {
-        String insertRental = "INSERT INTO rentals (book_id, user_id, rental_date) VALUES (?, ?, CURRENT_TIMESTAMP)";
-        String updateBook = "UPDATE books SET status = 'RENTED' WHERE id = ?";
-
-        try (Connection conn = DatabaseConfig.getConnection()) {
-            conn.setAutoCommit(false); // Start transaction
-            try (PreparedStatement ps1 = conn.prepareStatement(insertRental);
-                 PreparedStatement ps2 = conn.prepareStatement(updateBook)) {
-
-                ps1.setLong(1, bookId);
-                ps1.setLong(2, userId);
-                ps1.executeUpdate();
-
-                ps2.setLong(1, bookId);
-                ps2.executeUpdate();
-
-                conn.commit();
-                System.out.println("Book rented successfully.");
-            } catch (SQLException e) {
-                conn.rollback();
-                throw e;
-            }
-        } catch (SQLException e) {
-            System.err.println("Rental Error: " + e.getMessage());
-        }
-    }
-
 }

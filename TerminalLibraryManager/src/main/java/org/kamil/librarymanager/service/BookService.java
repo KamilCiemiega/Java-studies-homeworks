@@ -4,6 +4,7 @@ import org.kamil.librarymanager.config.DatabaseConfig;
 import org.kamil.librarymanager.model.Book;
 import org.kamil.librarymanager.model.BookStatus;
 import org.kamil.librarymanager.repository.BookRepository;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +13,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class BookService {
     private final BookRepository bookRepository;
 
@@ -64,12 +66,34 @@ public class BookService {
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
-                System.out.println("--- STATYSTYKI ---");
-                System.out.println("Wszystkich książek: " + rs.getInt("total"));
-                System.out.println("Wypożyczonych: " + rs.getInt("rented"));
+                System.out.println("--- STATISTICS ---");
+                System.out.println("Total books: " + rs.getInt("total"));
+                System.out.println("Loaned: " + rs.getInt("rented"));
             }
         } catch (SQLException e) {
-            System.err.println("Błąd statystyk: " + e.getMessage());
+            System.err.println("Statistics error: " + e.getMessage());
+        }
+    }
+
+    public void showAdminStats() {
+        String sql = "SELECT " +
+                "(SELECT COUNT(*) FROM books) as total_books, " +
+                "(SELECT COUNT(*) FROM books WHERE status = 'RENTED') as rented_books, " +
+                "(SELECT COUNT(*) FROM users) as total_users";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                System.out.println("\n=== LIBRARY STATISTICS ===");
+                System.out.println("Total Books:      " + rs.getInt("total_books"));
+                System.out.println("Books Rented:     " + rs.getInt("rented_books"));
+                System.out.println("Total Registered: " + rs.getInt("total_users"));
+                System.out.println("===========================");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching stats: " + e.getMessage());
         }
     }
 }

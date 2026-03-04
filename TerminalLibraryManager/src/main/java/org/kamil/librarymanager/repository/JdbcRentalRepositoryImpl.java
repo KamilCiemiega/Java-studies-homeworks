@@ -26,19 +26,41 @@ public class JdbcRentalRepositoryImpl implements RentalRepository {
                 ps2.executeUpdate();
 
                 conn.commit();
-                System.out.println("Książka wypożyczona pomyślnie!");
+                System.out.println("Book rented successfully!");
             } catch (SQLException e) {
                 conn.rollback();
                 throw e;
             }
         } catch (SQLException e) {
-            System.err.println("Błąd wypożyczania: " + e.getMessage());
+            System.err.println("Rental Error: " + e.getMessage());
         }
     }
 
     @Override
     public void returnBook(Long bookId) {
-        String updateRental = "UPDATE rentals SET return_date = CURRENT_TIMESTAMP WHERE book_id = ? AND return_date IS NULL";
-        String updateBook = "UPDATE books SET status = 'AVAILABLE' WHERE id = ?";
+        String updateRentalSql = "UPDATE rentals SET return_date = CURRENT_TIMESTAMP " +
+                "WHERE book_id = ? AND return_date IS NULL";
+        String updateBookSql = "UPDATE books SET status = 'AVAILABLE' WHERE id = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            conn.setAutoCommit(false);
+            try (PreparedStatement psRental = conn.prepareStatement(updateRentalSql);
+                 PreparedStatement psBook = conn.prepareStatement(updateBookSql)) {
+
+                psRental.setLong(1, bookId);
+                psRental.executeUpdate();
+
+                psBook.setLong(1, bookId);
+                psBook.executeUpdate();
+
+                conn.commit();
+                System.out.println("Success: Book ID " + bookId + " has been returned.");
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error returning book: " + e.getMessage());
+        }
     }
 }
