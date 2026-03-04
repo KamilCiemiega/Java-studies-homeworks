@@ -57,3 +57,12 @@ SELECT 'admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a
 INSERT INTO users (username, password_hash, role)
 SELECT 'kamil', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'USER'
     WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'kamil');
+
+-- Add to the end of schema.sql
+INSERT INTO books (title, author, year_published, isbn, status, category_id)
+SELECT 'The Witcher', 'Andrzej Sapkowski', 1993, '12345', 'AVAILABLE', 1
+    WHERE NOT EXISTS (SELECT 1 FROM books WHERE title = 'The Witcher');
+
+INSERT INTO books (title, author, year_published, isbn, status, category_id)
+SELECT 'Dune', 'Frank Herbert', 1965, '67890', 'AVAILABLE', 2
+    WHERE NOT EXISTS (SELECT 1 FROM books WHERE title = 'Dune');

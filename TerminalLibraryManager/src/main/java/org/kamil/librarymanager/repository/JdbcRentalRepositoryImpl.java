@@ -16,21 +16,22 @@ public class JdbcRentalRepositoryImpl implements RentalRepository {
         String updateBook = "UPDATE books SET status = 'RENTED' WHERE id = ?";
 
         try (Connection conn = DatabaseConfig.getConnection()) {
-            conn.setAutoCommit(false);
+            conn.setAutoCommit(false); // Requirement: Manage transactions manually
             try (PreparedStatement ps1 = conn.prepareStatement(insertRental);
                  PreparedStatement ps2 = conn.prepareStatement(updateBook)) {
 
-                ps1.setLong(1, bookId);
-                ps1.setLong(2, userId);
+                // Using setObject to avoid NullPointerException and allow DB constraints to trigger
+                ps1.setObject(1, bookId);
+                ps1.setObject(2, userId);
                 ps1.executeUpdate();
 
-                ps2.setLong(1, bookId);
+                ps2.setObject(1, bookId);
                 ps2.executeUpdate();
 
                 conn.commit();
                 System.out.println("Book rented successfully!");
             } catch (SQLException e) {
-                conn.rollback();
+                conn.rollback(); // Requirement: Rollback on failure
                 throw e;
             }
         } catch (SQLException e) {
@@ -49,10 +50,10 @@ public class JdbcRentalRepositoryImpl implements RentalRepository {
             try (PreparedStatement psRental = conn.prepareStatement(updateRentalSql);
                  PreparedStatement psBook = conn.prepareStatement(updateBookSql)) {
 
-                psRental.setLong(1, bookId);
+                psRental.setObject(1, bookId);
                 psRental.executeUpdate();
 
-                psBook.setLong(1, bookId);
+                psBook.setObject(1, bookId);
                 psBook.executeUpdate();
 
                 conn.commit();
