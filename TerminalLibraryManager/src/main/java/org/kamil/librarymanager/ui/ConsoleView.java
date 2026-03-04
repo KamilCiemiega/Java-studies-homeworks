@@ -6,6 +6,7 @@ import org.kamil.librarymanager.repository.RentalRepository;
 import org.kamil.librarymanager.service.AuthService;
 import org.kamil.librarymanager.service.BookService;
 
+import java.util.Optional;
 import java.util.Scanner;
 
 public class ConsoleView {
@@ -43,8 +44,13 @@ public class ConsoleView {
             System.out.print("Password: ");
             String password = scanner.nextLine();
 
-            currentUser = authService.login(username, password);
-            if (currentUser != null) {
+            // 1. Capture the result as an Optional
+            Optional<User> loginResult = authService.login(username, password);
+
+            // 2. Check if the "box" has a user inside
+            if (loginResult.isPresent()) {
+                // 3. Extract the user from the box
+                currentUser = loginResult.get();
                 System.out.println("Login successful! Welcome " + currentUser.getUsername());
             } else {
                 System.out.println("Invalid credentials.");

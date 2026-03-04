@@ -45,11 +45,11 @@ INSERT IGNORE INTO categories (name) VALUES ('Fantasy'), ('Science Fiction'), ('
 -- Add an Admin user (Username: admin | Password: admin123)
 -- The hash below is generated using SHA-256
 INSERT IGNORE INTO users (username, password_hash, role)
-VALUES ('admin', '240be518ebb2146c006fd2c091c05d9daa46a2d120c484f0775d742886395e86', 'ADMIN');
+VALUES ('admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'ADMIN');
 
 -- Add a test user (Username: kamil | Password: user123)
 INSERT IGNORE INTO users (username, password_hash, role)
-VALUES ('kamil', '0b4e7a0e5f1a7ad05f420e6988f01b7a2d64f0f6702f3598d92f58b09312e08c', 'USER');
+VALUES ('kamil', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'USER');
 
 -- Add some starter books
 INSERT IGNORE INTO books (title, author, year_published, status, category_id)

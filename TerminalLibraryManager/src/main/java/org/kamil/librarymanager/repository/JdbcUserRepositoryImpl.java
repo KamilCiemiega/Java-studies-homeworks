@@ -3,15 +3,19 @@ package org.kamil.librarymanager.repository;
 import org.kamil.librarymanager.config.DatabaseConfig;
 import org.kamil.librarymanager.model.Role;
 import org.kamil.librarymanager.model.User;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
-public class JdbcUserRepositoryImpl implements UserRepository{
+@Repository
+public class JdbcUserRepositoryImpl implements UserRepository {
+
     @Override
-    public User findByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         String sql = "SELECT * FROM users WHERE username = ?";
 
         try (Connection conn = DatabaseConfig.getConnection();
@@ -20,18 +24,21 @@ public class JdbcUserRepositoryImpl implements UserRepository{
             stmt.setString(1, username);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return new User(
+
+                    User user = new User(
                             rs.getLong("id"),
                             rs.getString("username"),
                             rs.getString("password_hash"),
                             Role.valueOf(rs.getString("role"))
                     );
+                    return Optional.of(user);
                 }
             }
         } catch (SQLException e) {
             System.err.println("Error finding user: " + e.getMessage());
         }
-        return null;
+
+        return Optional.empty();
     }
 
     @Override

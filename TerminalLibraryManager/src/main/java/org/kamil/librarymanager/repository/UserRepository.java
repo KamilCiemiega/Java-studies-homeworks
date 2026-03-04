@@ -2,7 +2,9 @@ package org.kamil.librarymanager.repository;
 
 import org.kamil.librarymanager.model.User;
 
+import java.util.Optional;
+
 public interface UserRepository {
-    User findByUsername(String username);
+    Optional<User> findByUsername(String username);
     void save(User user);
 }

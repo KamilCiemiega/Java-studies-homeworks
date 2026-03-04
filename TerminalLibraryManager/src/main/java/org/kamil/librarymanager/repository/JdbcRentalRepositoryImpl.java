@@ -1,11 +1,13 @@
 package org.kamil.librarymanager.repository;
 
 import org.kamil.librarymanager.config.DatabaseConfig;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+@Repository
 public class JdbcRentalRepositoryImpl implements RentalRepository {
 
     @Override

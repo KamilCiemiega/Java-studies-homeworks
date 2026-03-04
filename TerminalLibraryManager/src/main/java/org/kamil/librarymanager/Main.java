@@ -21,6 +21,8 @@ public class Main {
         RentalRepository rentalRepo = new JdbcRentalRepositoryImpl();
 
         ConsoleView view = new ConsoleView(bookService, authService, rentalRepo);
+        PasswordHasher hasher = new Sha256PasswordHasher();
+        System.out.println("DEBUG: Hash for admin123 is: " + hasher.hash("admin123"));
         view.start();
 
     }
