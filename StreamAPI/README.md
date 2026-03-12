@@ -1,44 +1,37 @@
-# Java Stream API - Practical Data Processing
+# Stream API Project - Assignment 2
 
-This project contains solutions to four programming tasks of varying difficulty levels, designed to practice the functionalities of the **Java Stream API**.
+This project contains solutions for data collection processing tasks using Java Stream API. All tasks have been implemented within the main class following the standard Maven project structure.
 
-## 🚀 Project Goal
-The primary objective is to replace traditional imperative loops (`for`, `while`) with a declarative approach. This results in code that is more concise, readable, and easier to maintain.
+## System Requirements
+- Java JDK 21
+- Maven 3.6 or newer
 
+## Project Structure
+The project follows the standard Maven directory layout:
+- `src/main/java/pl/kamil/streamapi/` - Java source files.
+- `pom.xml` - Maven configuration file defining dependencies and compiler version.
 
+## Tasks Included
+1. Task 1: Filtering and sorting even numbers from a list.
+2. Task 2: Filtering "Electronics" products priced over 1000 PLN and sorting them by price descending.
+3. Task 3: Calculating average salaries per department and filtering departments with an average above 5000 PLN.
+4. Task 4: Complex E-commerce analysis: filtering completed orders, flattening product lists, grouping by category, and finding the top 3 most popular products per category.
 
----
+## How to Run
 
-## 🛠️ Tasks Overview
+### Option 1: Using IntelliJ IDEA (Recommended)
+1. Open IntelliJ IDEA.
+2. Go to File > Open and select the folder containing the pom.xml file.
+3. Wait for IntelliJ to load the Maven dependencies.
+4. Navigate to src/main/java/pl/kamil/streamapi/StreamTaskRunner.java.
+5. Click the green Run icon next to the main method.
 
-### Task 1: Even Number Filtering (Very Easy)
-- **Operations:** `filter()`, `sorted()`, `toList()`.
-- **Description:** Extracts even integers from a list, sorts them in ascending order, and returns them as a new list.
+### Option 2: Using Terminal (Maven)
+If you have Maven installed on your system, you can run the project directly from the terminal:
 
-### Task 2: Product List Processing (Easy)
-- **Operations:** Multiple `filter()` calls, `sorted()` with `Comparator.reversed()`, and `map()`.
-- **Description:** Identifies products in the "Electronics" category priced over 1000 PLN, sorts them by price descending, and returns only their names.
-
-### Task 3: Employee Data Analysis (Medium)
-- **Operations:** `groupingBy()`, `averagingDouble()`, `entrySet().stream()`.
-- **Description:** Groups employees by department to calculate the average salary. It rounds the result to two decimal places and filters out departments where the average salary is 5000 PLN or less.
-
-### Task 4: E-commerce Order Analysis (Hard)
-- **Operations:** `flatMap()`, nested `groupingBy()`, `counting()`, `sorted()`, and `limit()`.
-- **Description:** Analyzes a complex order system to find the top 3 most frequently ordered products within each category, considering only "COMPLETED" (ZREALIZOWANE) orders.
-
----
-
-## 💻 Tech Stack
-* **Java 17+**
-* **Java Stream API** (`java.util.stream` package)
-* **Collectors** (for grouping, averaging, and transforming data)
-
----
-
-## 📋 How to Run
-1. Clone the repository or copy the source files.
-2. Ensure you have the model classes from `Models.java` in your classpath.
-3. Run the `main` method in `StreamExercise.java` to see the results printed to the console for each task.
-
-> **Note:** These solutions strictly follow the requirement of using the Stream API and avoid using manual loops to ensure a functional programming style.
+1. Navigate to the project root directory:
+   cd StreamAPI
+2. Compile the project:
+   mvn clean compile
+3. Execute the main class:
+   mvn exec:java -Dexec.mainClass="pl.kamil.streamapi.StreamTaskRunner"
