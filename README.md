@@ -7,11 +7,12 @@ This repository contains all my Java projects and homework assignments from univ
 
 ## Repository Structure
 
-Each project or homework is organized in its own folder:
-
+The repository is organized into distinct project folders. Each project follows standard Java development practices.
+```text
 Java-studies-homeworks/
 │
-├── TerminalLibraryManager/ <- Terminal-based library manager project
+├── StreamAPI/                          
+└── TerminalLibraryManager/  # Terminal-based library manager project
 
 ---
 
