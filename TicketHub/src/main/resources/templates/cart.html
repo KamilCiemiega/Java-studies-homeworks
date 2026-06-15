@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Koszyk</title>
+</head>
+<body>
+
+<h1>Basket</h1>
+
+<div th:each="item : ${cart.items}">
+    <p th:text="${item.eventTitle}"></p>
+    <p>Ilość: <span th:text="${item.quantity}"></span></p>
+    <hr/>
+</div>
+
+<form th:action="@{/cart/checkout}" method="post">
+    <button type="submit">Buy and pay</button>
+</form>
+
+</body>
+</html>

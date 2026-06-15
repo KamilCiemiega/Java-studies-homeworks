@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Events</title>
+</head>
+<body>
+
+<h1>Events list</h1>
+
+<div th:each="event : ${events}">
+    <h3 th:text="${event.title}"></h3>
+
+    <p th:text="${event.description}"></p>
+
+    <a th:href="@{'/event/' + ${event.id}}">
+        View details
+    </a>
+
+    <form th:action="@{'/reserve/' + ${event.id}}" method="post">
+        <button type="submit">Reserve</button>
+    </form>
+
+    <hr/>
+</div>
+
+</body>
+</html>

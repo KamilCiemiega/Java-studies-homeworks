@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event details</title>
+</head>
+<body>
+
+<h1 th:text="${event.title}"></h1>
+
+<p th:text="${event.description}"></p>
+<p th:text="${event.location}"></p>
+<p th:text="${event.ticketPrice}"></p>
+<p th:text="${event.availableTickets}"></p>
+
+<h3>Reserve ticket</h3>
+
+<form th:action="@{'/reserve/' + ${event.id}}" method="post">
+    <label>
+        <input name="firstName" placeholder="First name"/>
+    </label>
+    <label>
+        <input name="lastName" placeholder="Last name"/>
+    </label>
+    <label>
+        <input name="email" placeholder="Email"/>
+    </label>
+    <button type="submit">Reserve</button>
+</form>
+
+</body>
+</html>

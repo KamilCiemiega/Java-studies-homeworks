@@ -1,0 +1,33 @@
+# Maven / Gradle build
+target/
+build/
+out/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+logs/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Spring Boot
+application-local.properties
+application-dev.properties
+
+# H2 database files (jeśli zapisujesz na dysku)
+*.mv.db
+*.trace.db
+
+# Temporary files
+*.tmp
+*.swp
