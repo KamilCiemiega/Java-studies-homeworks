@@ -1,5 +1,6 @@
 package tickethub.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tickethub.entity.Event;
@@ -13,8 +14,10 @@ public class ReservationService {
 
     private final EventRepository eventRepository;
     private final ReservationRepository reservationRepository;
+    private final TicketAsyncService ticketAsyncService;
 
-    public synchronized void createReservation(Long eventId, Reservation reservation) {
+    @Transactional
+    public void createReservation(Long eventId, Reservation reservation) {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
@@ -29,5 +32,9 @@ public class ReservationService {
 
         eventRepository.save(event);
         reservationRepository.save(reservation);
+
+        reservationRepository.save(reservation);
+
+        ticketAsyncService.generateTicket(reservation.getId());
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tickethub.entity.Event;
 import tickethub.entity.Reservation;
+import tickethub.service.CartService;
 import tickethub.service.EventService;
 import tickethub.service.ReservationService;
 
@@ -17,6 +18,7 @@ public class EventController {
 
     private final EventService eventService;
     private final ReservationService reservationService;
+    private final CartService cartService;
 
     @GetMapping("/")
     public String list(Model model) {
@@ -61,6 +63,26 @@ public class EventController {
     @PostMapping("/events")
     public String save(@ModelAttribute Event event) {
         eventService.save(event);
+        return "redirect:/";
+    }
+
+    @PostMapping("/cart/add/{id}")
+    public String addToCart(@PathVariable Long id) {
+        Event event = eventService.getById(id);
+        cartService.addToCart(event);
+
+        return "redirect:/";
+    }
+
+    @PostMapping("/cart/checkout")
+    public String checkout() {
+
+        cartService.getCart().getEvents().forEach(event ->
+                reservationService.createReservation(event.getId(), new Reservation())
+        );
+
+        cartService.clear();
+
         return "redirect:/";
     }
 
