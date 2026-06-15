@@ -1,18 +1,19 @@
 package tickethub.exception;
 
-import jakarta.persistence.OptimisticLockException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(OptimisticLockException.class)
+    @ExceptionHandler(OptimisticLockingFailureException.class)
     public String handleOptimisticLock() {
-        return "redirect:/events?error=concurrency";
+        return "redirect:/?error=concurrency";
     }
 
     @ExceptionHandler(RuntimeException.class)
     public String handleRuntime(RuntimeException ex) {
-        return "redirect:/events?error=" + ex.getMessage();
+        return "redirect:/?error=" + ex.getMessage();
     }
 }

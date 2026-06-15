@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import tickethub.entity.Event;
 import tickethub.service.EventService;
-
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -14,14 +14,25 @@ public class EventRestController {
 
     private final EventService eventService;
 
+    // Spełnia wymaganie pobierania z filtrami: GET /api/events?location=Krakow&maxPrice=100
     @GetMapping
-    public List<Event> getAll() {
+    public List<Event> getAll(@RequestParam(required = false) String location,
+                              @RequestParam(required = false) Double maxPrice) {
+        if (location != null || maxPrice != null) {
+            return eventService.getFilteredEvents(location, maxPrice);
+        }
         return eventService.getAll();
     }
 
     @GetMapping("/{id}")
     public Event getById(@PathVariable Long id) {
         return eventService.getById(id);
+    }
+
+    // Dodatkowy punkt końcowy pokazujący integrację z API zewnętrznym
+    @GetMapping("/{id}/price-usd")
+    public BigDecimal getPriceInUSD(@PathVariable Long id) {
+        return eventService.getTicketPriceInUSD(id);
     }
 
     @PostMapping

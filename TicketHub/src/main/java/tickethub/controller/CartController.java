@@ -75,21 +75,21 @@ public class CartController {
     // ===== CHECKOUT (NAJWAŻNIEJSZE NA 5.0) =====
     @PostMapping("/checkout")
     public String checkout(HttpSession session) {
-
         Cart cart = getCart(session);
 
         cart.getItems().forEach(item -> {
-
             for (int i = 0; i < item.getQuantity(); i++) {
-                reservationService.createReservation(
-                        item.getEventId(),
-                        new Reservation()
-                );
+                Reservation reservation = new Reservation();
+                reservation.setFirstName("Klient"); // Przykładowe dane, wymagane przez encję
+                reservation.setLastName("Koszykowy");
+                reservation.setEmail("klient@ticket.pl");
+                reservation.setReservationDate(java.time.LocalDateTime.now());
+
+                reservationService.createReservation(item.getEventId(), reservation);
             }
         });
 
         session.removeAttribute("cart");
-
-        return "redirect:/events";
+        return "redirect:/?msg=success";
     }
 }

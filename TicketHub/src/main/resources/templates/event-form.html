@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dodaj Wydarzenie</title>
+</head>
+<body>
+<h1>Dodaj nowe wydarzenie</h1>
+<form th:action="@{/events}" th:object="${event}" method="post">
+    <input type="text" th:field="*{title}" placeholder="Tytuł" required/><br/>
+    <input type="text" th:field="*{description}" placeholder="Opis"/><br/>
+    <input type="text" th:field="*{location}" placeholder="Lokalizacja"/><br/>
+    <input type="number" th:field="*{ticketPrice}" placeholder="Cena" step="0.01"/><br/>
+    <input type="number" th:field="*{availableTickets}" placeholder="Liczba biletów"/><br/>
+    <button type="submit">Zapisz</button>
+</form>
+</body>
+</html>

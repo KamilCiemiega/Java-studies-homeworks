@@ -68,28 +68,4 @@ public class EventController {
         return "redirect:/";
     }
 
-    @PostMapping("/cart/add/{id}")
-    public String addToCart(@PathVariable Long id) {
-        Event event = eventService.getById(id);
-        cartService.addToCart(event);
-
-        return "redirect:/";
-    }
-
-    @PostMapping("/cart/checkout")
-    public String checkout(HttpSession session) {
-
-        Cart cart = (Cart) session.getAttribute("cart");
-
-        if (cart != null) {
-            cart.getEvents().forEach(event ->
-                    reservationService.createReservation(event.getId(), new Reservation())
-            );
-        }
-
-        session.removeAttribute("cart");
-
-        return "redirect:/";
-    }
-
 }
