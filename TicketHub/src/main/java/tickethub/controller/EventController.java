@@ -77,9 +77,12 @@ public class EventController {
     @PostMapping("/cart/checkout")
     public String checkout() {
 
-        cartService.getCart().getEvents().forEach(event ->
-                reservationService.createReservation(event.getId(), new Reservation())
-        );
+        cartService.getCart().getItems().forEach(item -> {
+            reservationService.createReservation(
+                    item.getEventId(),
+                    new Reservation()
+            );
+        });
 
         cartService.clear();
 
