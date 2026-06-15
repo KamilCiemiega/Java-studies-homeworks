@@ -3,9 +3,7 @@ package tickethub.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import tickethub.entity.Event;
-import tickethub.entity.Reservation;
-import tickethub.service.EventService;
-import tickethub.service.ReservationService;
+import tickethub.repository.EventRepository;
 
 import java.util.List;
 
@@ -14,30 +12,47 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventRestController {
 
-    private final EventService eventService;
-    private final ReservationService reservationService;
+    private final EventRepository eventRepository;
 
-    // GET ALL EVENTS
+    // GET ALL
     @GetMapping
     public List<Event> getAll() {
-        return eventService.getAll();
+        return eventRepository.findAll();
     }
 
-    // GET ONE EVENT
+    // GET BY ID
     @GetMapping("/{id}")
     public Event getById(@PathVariable Long id) {
-        return eventService.getById(id);
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
     }
 
-    // CREATE EVENT (API)
+    // CREATE
     @PostMapping
     public Event create(@RequestBody Event event) {
-        return eventService.save(event);
+        return eventRepository.save(event);
     }
 
-    // DELETE EVENT
+    // UPDATE
+    @PutMapping("/{id}")
+    public Event update(@PathVariable Long id, @RequestBody Event updated) {
+
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        event.setTitle(updated.getTitle());
+        event.setDescription(updated.getDescription());
+        event.setLocation(updated.getLocation());
+        event.setEventDate(updated.getEventDate());
+        event.setTicketPrice(updated.getTicketPrice());
+        event.setAvailableTickets(updated.getAvailableTickets());
+
+        return eventRepository.save(event);
+    }
+
+    // DELETE
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        eventService.delete(id);
+        eventRepository.deleteById(id);
     }
 }

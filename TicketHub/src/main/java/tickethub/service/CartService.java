@@ -4,15 +4,14 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tickethub.cart.Cart;
-import tickethub.entity.Event;
 
 @Service
 @RequiredArgsConstructor
 public class CartService {
 
-    private static final String CART_KEY = "CART";
-
     private final HttpSession session;
+
+    private static final String CART_KEY = "CART";
 
     public Cart getCart() {
         Cart cart = (Cart) session.getAttribute(CART_KEY);
@@ -25,11 +24,11 @@ public class CartService {
         return cart;
     }
 
-    public void addToCart(Event event) {
-        getCart().add(event);
+    public void addEvent(Long eventId) {
+        getCart().getEventIds().add(eventId);
     }
 
     public void clear() {
-        getCart().clear();
+        session.removeAttribute(CART_KEY);
     }
 }

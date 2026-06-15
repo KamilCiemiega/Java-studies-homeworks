@@ -29,4 +29,7 @@ public class Event {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Reservation> reservations;
+
+    @Version
+    private Long version;
 }

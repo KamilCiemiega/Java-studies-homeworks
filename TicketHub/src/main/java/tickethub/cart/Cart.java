@@ -1,21 +1,27 @@
 package tickethub.cart;
 
-import lombok.Getter;
-import tickethub.entity.Event;
-
+import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
+@Data
 public class Cart {
 
-    private final List<Event> events = new ArrayList<>();
+    private List<CartItem> items = new ArrayList<>();
 
-    public void add(Event event) {
-        events.add(event);
+    public void addItem(CartItem newItem) {
+
+        for (CartItem item : items) {
+            if (item.getEventId().equals(newItem.getEventId())) {
+                item.setQuantity(item.getQuantity() + newItem.getQuantity());
+                return;
+            }
+        }
+
+        items.add(newItem);
     }
 
     public void clear() {
-        events.clear();
+        items.clear();
     }
 }

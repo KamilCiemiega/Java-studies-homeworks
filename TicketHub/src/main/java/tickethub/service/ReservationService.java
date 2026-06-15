@@ -17,7 +17,7 @@ public class ReservationService {
     private final TicketAsyncService ticketAsyncService;
 
     @Transactional
-    public void createReservation(Long eventId, Reservation reservation) {
+    public Reservation createReservation(Long eventId, Reservation reservation) {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
@@ -30,11 +30,11 @@ public class ReservationService {
 
         reservation.setEvent(event);
 
-        eventRepository.save(event);
-        reservationRepository.save(reservation);
+        Event savedEvent = eventRepository.save(event);
+        Reservation savedReservation = reservationRepository.save(reservation);
 
-        reservationRepository.save(reservation);
+        ticketAsyncService.generateTicket(savedReservation.getId());
 
-        ticketAsyncService.generateTicket(reservation.getId());
+        return savedReservation;
     }
 }

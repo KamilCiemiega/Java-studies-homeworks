@@ -3,10 +3,12 @@ package tickethub.controller;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import tickethub.cart.Cart;
 import tickethub.cart.CartItem;
 import tickethub.entity.Event;
+import tickethub.entity.Reservation;
 import tickethub.service.EventService;
 import tickethub.service.ReservationService;
 
@@ -18,17 +20,19 @@ public class CartController {
     private final EventService eventService;
     private final ReservationService reservationService;
 
-    // POBIERZ KOSZYK Z SESJI
+    // ===== POBIERANIE KOSZYKA Z SESJI =====
     private Cart getCart(HttpSession session) {
         Cart cart = (Cart) session.getAttribute("cart");
+
         if (cart == null) {
             cart = new Cart();
             session.setAttribute("cart", cart);
         }
+
         return cart;
     }
 
-    // DODAJ DO KOSZYKA
+    // ===== DODANIE DO KOSZYKA =====
     @PostMapping("/add/{eventId}")
     public String addToCart(@PathVariable Long eventId, HttpSession session) {
 
@@ -36,18 +40,30 @@ public class CartController {
 
         Cart cart = getCart(session);
 
-        cart.addItem(new CartItem(
-                event.getId(),
-                event.getTitle(),
-                1
-        ));
+        // jeśli już istnieje → zwiększ ilość
+        boolean exists = cart.getItems().stream()
+                .anyMatch(item -> item.getEventId().equals(eventId));
 
-        return "redirect:/";
+        if (exists) {
+            cart.getItems().forEach(item -> {
+                if (item.getEventId().equals(eventId)) {
+                    item.setQuantity(item.getQuantity() + 1);
+                }
+            });
+        } else {
+            cart.addItem(new CartItem(
+                    event.getId(),
+                    event.getTitle(),
+                    1
+            ));
+        }
+
+        return "redirect:/events";
     }
 
-    // PODGLĄD KOSZYKA
+    // ===== PODGLĄD KOSZYKA =====
     @GetMapping
-    public String viewCart(HttpSession session, org.springframework.ui.Model model) {
+    public String viewCart(HttpSession session, Model model) {
 
         Cart cart = getCart(session);
 
@@ -56,23 +72,24 @@ public class CartController {
         return "cart";
     }
 
-    // FINALIZACJA ZAKUPU
+    // ===== CHECKOUT (NAJWAŻNIEJSZE NA 5.0) =====
     @PostMapping("/checkout")
     public String checkout(HttpSession session) {
 
         Cart cart = getCart(session);
 
-        for (CartItem item : cart.getItems()) {
+        cart.getItems().forEach(item -> {
+
             for (int i = 0; i < item.getQuantity(); i++) {
                 reservationService.createReservation(
                         item.getEventId(),
-                        new tickethub.entity.Reservation()
+                        new Reservation()
                 );
             }
-        }
+        });
 
-        cart.clear();
+        session.removeAttribute("cart");
 
-        return "redirect:/";
+        return "redirect:/events";
     }
 }
