@@ -3,7 +3,7 @@ package tickethub.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import tickethub.entity.Event;
-import tickethub.repository.EventRepository;
+import tickethub.service.EventService;
 
 import java.util.List;
 
@@ -12,47 +12,30 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventRestController {
 
-    private final EventRepository eventRepository;
+    private final EventService eventService;
 
-    // GET ALL
     @GetMapping
     public List<Event> getAll() {
-        return eventRepository.findAll();
+        return eventService.getAll();
     }
 
-    // GET BY ID
     @GetMapping("/{id}")
     public Event getById(@PathVariable Long id) {
-        return eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+        return eventService.getById(id);
     }
 
-    // CREATE
     @PostMapping
     public Event create(@RequestBody Event event) {
-        return eventRepository.save(event);
+        return eventService.save(event);
     }
 
-    // UPDATE
     @PutMapping("/{id}")
-    public Event update(@PathVariable Long id, @RequestBody Event updated) {
-
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
-
-        event.setTitle(updated.getTitle());
-        event.setDescription(updated.getDescription());
-        event.setLocation(updated.getLocation());
-        event.setEventDate(updated.getEventDate());
-        event.setTicketPrice(updated.getTicketPrice());
-        event.setAvailableTickets(updated.getAvailableTickets());
-
-        return eventRepository.save(event);
+    public Event update(@PathVariable Long id, @RequestBody Event event) {
+        return eventService.update(id, event);
     }
 
-    // DELETE
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        eventRepository.deleteById(id);
+        eventService.delete(id);
     }
 }

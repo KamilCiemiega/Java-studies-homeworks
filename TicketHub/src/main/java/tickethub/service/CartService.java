@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tickethub.cart.Cart;
+import tickethub.cart.CartItem;
+import tickethub.entity.Event;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +26,15 @@ public class CartService {
         return cart;
     }
 
-    public void addEvent(Long eventId) {
-        getCart().getEventIds().add(eventId);
+    public void addEvent(Event event) {
+
+        Cart cart = getCart();
+
+        cart.addItem(new CartItem(
+                event.getId(),
+                event.getTitle(),
+                1
+        ));
     }
 
     public void clear() {

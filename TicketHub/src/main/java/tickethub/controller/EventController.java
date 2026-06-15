@@ -1,11 +1,13 @@
 package tickethub.controller;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import tickethub.cart.Cart;
 import tickethub.entity.Event;
 import tickethub.entity.Reservation;
 import tickethub.service.CartService;
@@ -75,16 +77,17 @@ public class EventController {
     }
 
     @PostMapping("/cart/checkout")
-    public String checkout() {
+    public String checkout(HttpSession session) {
 
-        cartService.getCart().getItems().forEach(item -> {
-            reservationService.createReservation(
-                    item.getEventId(),
-                    new Reservation()
+        Cart cart = (Cart) session.getAttribute("cart");
+
+        if (cart != null) {
+            cart.getEvents().forEach(event ->
+                    reservationService.createReservation(event.getId(), new Reservation())
             );
-        });
+        }
 
-        cartService.clear();
+        session.removeAttribute("cart");
 
         return "redirect:/";
     }
