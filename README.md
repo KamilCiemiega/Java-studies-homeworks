@@ -13,6 +13,7 @@ Java-studies-homeworks/
 │
 ├── StreamAPI/                          
 └── TerminalLibraryManager/  # Terminal-based library manager project
+└── TicketHub/ 
 
 ---
 
