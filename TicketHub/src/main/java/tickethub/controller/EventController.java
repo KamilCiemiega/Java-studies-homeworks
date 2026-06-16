@@ -20,7 +20,6 @@ public class EventController {
 
     private final EventService eventService;
     private final ReservationService reservationService;
-    private final CartService cartService;
 
     @GetMapping("/")
     public String list(Model model) {

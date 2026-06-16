@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Logowanie - Admin</title>
+</head>
+<body>
+<h1>Logowanie dla Administratora</h1>
+
+<div th:if="${param.error}" style="color: red;">
+    Błędny login lub hasło!
+</div>
+
+<form th:action="@{/login}" method="post">
+    <label>Użytkownik: <input type="text" name="username" required/></label><br/><br/>
+    <label>Hasło: <input type="password" name="password" required/></label><br/><br/>
+    <button type="submit">Zaloguj się</button>
+</form>
+
+<br/>
+<a th:href="@{/}">Powrót do strony głównej</a>
+</body>
+</html>
