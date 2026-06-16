@@ -57,14 +57,32 @@ public class EventController {
 
 
     @GetMapping("/events/new")
-    public String createForm(Model model) {
+    public String createForm(Model model, HttpSession session) {
+        String role = (String) session.getAttribute("userRole");
+        if (!"ADMIN".equals(role)) {
+            return "redirect:/?error=unauthorized";
+        }
         model.addAttribute("event", new Event());
         return "event-form";
     }
 
     @PostMapping("/events")
-    public String save(@ModelAttribute Event event) {
+    public String save(@ModelAttribute Event event, HttpSession session) {
+        String role = (String) session.getAttribute("userRole");
+        if (!"ADMIN".equals(role)) {
+            return "redirect:/?error=unauthorized";
+        }
         eventService.save(event);
+        return "redirect:/";
+    }
+
+    @PostMapping("/event/delete/{id}")
+    public String deleteEvent(@PathVariable Long id, HttpSession session) {
+        String role = (String) session.getAttribute("userRole");
+        if (!"ADMIN".equals(role)) {
+            return "redirect:/?error=unauthorized";
+        }
+        eventService.delete(id);
         return "redirect:/";
     }
 

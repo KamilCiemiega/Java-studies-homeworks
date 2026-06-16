@@ -19,6 +19,9 @@
     <form th:action="@{'/reserve/' + ${event.id}}" method="post">
         <button type="submit">Reserve</button>
     </form>
+    <form th:action="@{'/event/delete/' + ${event.id}}" method="post">
+        <button type="submit" style="color: red;">Delete event</button>
+    </form>
 
     <hr/>
 </div>

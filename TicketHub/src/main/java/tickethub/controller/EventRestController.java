@@ -14,12 +14,12 @@ public class EventRestController {
 
     private final EventService eventService;
 
-    // Spełnia wymaganie pobierania z filtrami: GET /api/events?location=Krakow&maxPrice=100
     @GetMapping
     public List<Event> getAll(@RequestParam(required = false) String location,
-                              @RequestParam(required = false) Double maxPrice) {
-        if (location != null || maxPrice != null) {
-            return eventService.getFilteredEvents(location, maxPrice);
+                              @RequestParam(required = false) Double maxPrice,
+                              @RequestParam(required = false) String date) {
+        if (location != null || maxPrice != null || date != null) {
+            return eventService.getFilteredEvents(location, maxPrice, date);
         }
         return eventService.getAll();
     }

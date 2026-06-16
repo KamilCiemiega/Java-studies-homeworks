@@ -34,8 +34,7 @@ public class EventService {
         eventRepository.deleteById(id);
     }
 
-    public List<Event> getFilteredEvents(String location, Double maxPrice) {
-
+    public List<Event> getFilteredEvents(String location, Double maxPrice, String date) {
         List<Event> events = eventRepository.findAll();
 
         if (location != null) {
@@ -49,6 +48,13 @@ public class EventService {
             events = events.stream()
                     .filter(e -> e.getTicketPrice() != null &&
                             e.getTicketPrice().doubleValue() <= maxPrice)
+                    .toList();
+        }
+
+        if (date != null) {
+            events = events.stream()
+                    .filter(e -> e.getEventDate() != null &&
+                            e.getEventDate().toLocalDate().toString().equals(date))
                     .toList();
         }
 
