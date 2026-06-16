@@ -29,6 +29,6 @@ git clone https://github.com/KamilCiemiega/Java-studies-homeworks.git
 
 Open the project folder you want in your IDE (IntelliJ IDEA recommended)
 
-Follow the instructions in the specific project's README.md
+Follow the instructions in the specific projects README.md
 
 This repository serves as a record of my Java learning and practice projects, demonstrating knowledge of OOP, collections, console applications, Maven, and more.
